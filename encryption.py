@@ -52,5 +52,5 @@ class encryption(object):
 if __name__ == "__main__":
 	
 	en = encryption()
-	print en.encrypt("Silvia")
+	print en.encrypt("Encrypt some text")
 	#print en.decrypt("g3LKYMRjSi5DmRtT4XEtOIQimN85hmBkDv3iPOWxu78=")
