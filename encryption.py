@@ -48,6 +48,7 @@ class encryption(object):
 		DecodeAES = lambda c, e: c.decrypt(base64.b64decode(e)).rstrip(PADDING)
 		decoded = DecodeAES(cipher, data)
 		return decoded
+#sample usage
 if __name__ == "__main__":
 	
 	en = encryption()
