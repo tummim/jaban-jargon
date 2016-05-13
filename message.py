@@ -26,6 +26,9 @@ class message:
 
 	def type():
 		#Type - Distinguishes between types of message - (Integer in a single byte)
+		#hex(0x01): Data message (0000 0001) (8th bit)
+		#hex(0x02): Control message (0000 0010) (7th bit)
+		#hex(0x04): Authentication message (0000 0100) (6th bit)
 		return F
 
 	def flag():
