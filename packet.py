@@ -117,8 +117,8 @@ class packet():
 		return hop
 
 	def length(self, pay):
-		if str(len(pay)) > 0:
-			return leng.encode("ASCII");
+		if len(str(pay)) > 0:
+			return len(str(pay))
 		else:
 			return 0
 
