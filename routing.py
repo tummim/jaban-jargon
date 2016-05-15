@@ -8,8 +8,8 @@ class router:
 	#And OF COURSE the source will stay the same.
 	#To forward the message, I will look in the routing table for the destination, get his VIA field, and search that VIA (which is an UUID) in my neighbor table. From there I will get the correct socket I will use for forwarding the packet.
     def __init__(self):
-        self.myUUID = "AAAAAAAA" #my own UUID for initial entry
-        self.myIPSOC = "192.168.1.1:666" #my own IP and sock for initial entry
+        self.myUUID = None #my own UUID for initial entry
+        self.myIPSOC = None #my own IP and sock for initial entry
         self.neigh_table = [[self.myUUID, self.myIPSOC, "999"]] # [entry nr][0 - UUID/1 - socket(ip:port)/2 - Passive Timer]
         self.routing_table = [[self.myUUID, self.myUUID, "0"]] # [entry nr][0 - Destination UUID/1 - via UUID/2 - cost(hops)]
 		

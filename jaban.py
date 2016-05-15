@@ -6,6 +6,7 @@ import sys
 import string
 from send_message import *
 from message import *
+from routing import *
 
 #Spescial thanks to: teddy_k
 
@@ -18,10 +19,11 @@ def main():
                 self.running = 1
                 self.conn = None
                 self.addr = None
+                self.PORT = None
 
             def run(self):
                 HOST = ''
-                PORT = int(raw_input("Insert my port: "))
+                #PORT = int(raw_input("Insert my port: "))
                 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
                 s.bind((HOST,PORT))
@@ -39,7 +41,10 @@ def main():
                             print in_data
                             if in_data["type"] == "0x04":
                                 if in_data["flag"] == "1":
-                                    #add to neighbour table neighbour_table{"UUID":in_data["source"], "socket": "%s:%s", "p_timer": ?date()?} % self.addr
+                                    #neighbour_table = {"UUID":in_data["source"], "socket": "%s:%s", "p_timer": "5"} % self.addr
+                                    #inssers some elaborate code here to search uuid from neighbour table and then send ack 
+                                    #to that neighbour 
+                                    self.conn.sendall(Message().ack())
                                     print "added to neighbour table"
                             print "\r" + "(%s, %s): " % self.addr + in_data["source"]
                         else:
@@ -68,11 +73,10 @@ def main():
                         # Handle sockets
                         data = self.sock.recv(1024)
                         if data:
-
                             print "\r" + "(%s, %s): " % (self.host, PORT) + data
-                            #text_input.run()
                         else:
                             break
+
                     time.sleep(0)
 
             def kill(self):
@@ -87,12 +91,10 @@ def main():
                 while self.running == True:
                     
                     text = raw_input('')
-                    if text == 'kill_me' :
-                        chat_client.kill()
+                    if text == 'kill_me':
                         chat_server.kill()
                         self.kill()
                     elif text == 'connect_neighbour':
-                        chat_client.host = raw_input('Insert neighbour ip: ')
                         chat_client.start()
                     elif text == 'auth_msg':
                         auth_str = Message().auth_successful()
@@ -104,6 +106,7 @@ def main():
                     else:
                         try:
                             chat_client.sock.sendall(text)
+                            chat_client.kill()
                         except:
                             Exception
 
@@ -119,7 +122,12 @@ def main():
 
     # Prompt, object instantiation, and threads start here.
 
+    PORT = raw_input("Insert my port: ")
+    routing = router()
+    routing.myUUID = packet().source()
+    routing.myIPSOC = PORT
     chat_server = Chat_Server()
+    chat_server.PORT = int(PORT)
     chat_client = Chat_Client()
     chat_server.start()
     text_input = Text_Input()
