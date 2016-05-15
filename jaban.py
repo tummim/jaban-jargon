@@ -35,7 +35,7 @@ def main():
                         # Handle sockets
                         data = self.conn.recv(1024)
                         if data:
-                            in_data = message.break_message(data)
+                            in_data = message().break_message(data)
                             print in_data
                             print "\r" + "(%s, %s): " % self.addr + in_data["source"]
                         else:

@@ -61,7 +61,7 @@ class message:
 
 		return data_array
 
-	def break_message(data_in):
+	def break_message(self, data_in):
 		data_in = data_in.encode("utf8")
 		if len(data_in) <= 100:
 			return {"version":data_in[0:1], "source":data_in[1:9], "destination":data_in[9:17], "type":data_in[17:18], "flag":data_in[18:19], "hopcount":data_in[19:20], "length":data_in[20:21], "payload":data_in[21:]}
