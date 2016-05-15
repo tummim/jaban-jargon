@@ -41,7 +41,7 @@ def main():
                             print in_data
                             if in_data["type"] == "0x04":
                                 if in_data["flag"] == "1":
-                                    #neighbour_table = {"UUID":in_data["source"], "socket": "%s:%s", "p_timer": "5"} % self.addr
+                                    routing.neighbour_t_add(in_data["source"], self.addr, 5)
                                     #inssers some elaborate code here to search uuid from neighbour table and then send ack 
                                     #to that neighbour 
                                     self.conn.sendall(Message().ack())

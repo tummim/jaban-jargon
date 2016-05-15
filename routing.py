@@ -56,6 +56,12 @@ class router:
             i = i + 1		
             return self.neigh_table
 
+    def find_in_neighbour_t(self,sUUID):
+    	i=0
+    	while i < len(self.neigh_table)
+    		if self.neigh_table[i][0] == sUUID
+    			return i
+
     def display_n_table(self): #displays the neighbour table
         i = 0
         print "---------- Neighbour Table ----------"
