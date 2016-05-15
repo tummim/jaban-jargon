@@ -26,7 +26,7 @@ def main():
                 #PORT = int(raw_input("Insert my port: "))
                 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-                s.bind((HOST,PORT))
+                s.bind((HOST,self.PORT))
                 s.listen(1)
                 self.conn, self.addr = s.accept()
                 print "Client (%s, %s) connected" % self.addr
