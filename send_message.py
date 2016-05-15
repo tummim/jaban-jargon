@@ -87,7 +87,7 @@ class Message():
 			auth_msg.append(c);
 		
 		auth_msg.append(build_packet.hopcount(1))
-		auth_msg.append(build_packet.length())
+		auth_msg.append(build_packet.length(0))
 		auth_msg.append(build_packet.payload())
 
 		return str(auth_msg);
@@ -269,7 +269,7 @@ class Message():
 if __name__ == "__main__":
 	
 	mg = Message()
-	print mg.rst()
+	print mg.auth_successful()
 	#print mg.file_message()
 	#print mg.chat_message()
 	#print mg.auth_successful()

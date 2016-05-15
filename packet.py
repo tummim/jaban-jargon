@@ -114,14 +114,14 @@ class packet():
 
 
 	def hopcount(self, hop = " "):
-		return hop;
+		return hop
 
 	def length(self, pay = " "):
-		leng = str(len(pay));
+		if str(len(pay)) :
 		return leng.encode("ASCII");
 
 	def payload(self, pay = " "):
-		return pay;
+		return pay
 """
 	def packet(self):
 		#some_type = "authentication" 

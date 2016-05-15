@@ -5,6 +5,7 @@ import time
 import sys
 import string
 from send_message import *
+from message import *
 
 #Spescial thanks to: teddy_k
 
@@ -34,7 +35,9 @@ def main():
                         # Handle sockets
                         data = self.conn.recv(1024)
                         if data:
-                            print "\r" + "(%s, %s): " % self.addr + data
+                            in_data = message.break_message(data)
+                            print in_data
+                            print "\r" + "(%s, %s): " % self.addr + in_data["source"]
                         else:
                             break
                     time.sleep(0)
@@ -61,7 +64,9 @@ def main():
                         # Handle sockets
                         data = self.sock.recv(1024)
                         if data:
+
                             print "\r" + "(%s, %s): " % (self.host, PORT) + data
+                            #text_input.run()
                         else:
                             break
                     time.sleep(0)
@@ -85,10 +90,11 @@ def main():
                     elif text == 'connect_neighbour':
                         chat_client.host = raw_input('Insert neighbour ip: ')
                         chat_client.start()
+                    elif text == 'auth_msg':
                         auth_str = Message().auth_successful()
-                        print auth_str
+                        #print auth_str
                         #auth_str get authent string
-                        #chat_client.sock.sendall(auth_str)
+                        chat_client.sock.sendall(auth_str)
 
                         
                     else:
