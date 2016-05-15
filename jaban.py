@@ -4,6 +4,7 @@ import select
 import time
 import sys
 import string
+from send_message import *
 
 #Spescial thanks to: teddy_k
 
@@ -84,7 +85,12 @@ def main():
                     elif text == 'connect_neighbour':
                         chat_client.host = raw_input('Insert neighbour ip: ')
                         chat_client.start()
+                        auth_str = Message().auth_successful()
+                        print auth_str
+                        #auth_str get authent string
+                        #chat_client.sock.sendall(auth_str)
 
+                        
                     else:
                         try:
                             chat_client.sock.sendall(text)

@@ -90,7 +90,7 @@ class Message():
 		auth_msg.append(build_packet.length())
 		auth_msg.append(build_packet.payload())
 
-		return auth_msg;
+		return str(auth_msg);
 
 	def auth_failure(self):
 

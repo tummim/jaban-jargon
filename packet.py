@@ -1,4 +1,4 @@
-import sys, os, json, gnupg
+import sys, os#, json, gnupg
 import ConfigParser
 
 config =  ConfigParser.ConfigParser()
