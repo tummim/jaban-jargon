@@ -23,23 +23,23 @@ def main():
 
             def socet_data (self, sock, message):
             #Do not send the message to master socket and the client who has send us the message
-                for socket in CONNECTION_LIST:
+                for socket in conn_list:
                     if socket != s and socket == sock:
                         try :
                             socket.send(message)
                         except :
                             # broken socket connection 
                             socket.close()
-                            CONNECTION_LIST.remove(socket)
+                            conn_list.remove(socket)
 
             def run(self):
                 HOST = ''
-                #PORT = int(raw_input("Insert my port: "))
                 conn_list = []
                 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
                 s.bind((HOST,self.PORT))
                 s.listen(5)
+
                 conn_list.append(s)
                 conn_list.append(sys.stdin)
                 
@@ -56,24 +56,25 @@ def main():
                             CONNECTION_LIST.append(self.conn)
                             print "Client (%s, %s) connected" % self.addr
                     
-                    for input_item in inputready:
-                        # Handle sockets
-                        data = self.conn.recv(1024)
-                        if data:
-                            in_data = message().break_message(data)
-                            print in_data
-                            if in_data["type"] == "0x04":
-                                if in_data["flag"] == "1":
-                                    routing.neighbour_t_add(in_data["source"], self.addr, 5)
-                                    if routing.neigh_table[routing.find_uuid_in_neighbour_t(in_data["source"])][1] == self.conn
-                                        self.conn.sendall(Message().ack())
-                                        print "added to neighbour table"
-                                    else: 
-                                        print self.conn
-                                        print routing.neigh_table[routing.find_uuid_in_neighbour_t(in_data["source"])][1]
-                            print "\r" + "(%s, %s): " % self.addr + in_data["source"]
+                    #for input_item in inputready:
                         else:
-                            break
+                        # Handle sockets
+                            data = self.conn.recv(4096)
+                            if data:
+                                in_data = message().break_message(data)
+                                print in_data
+                                if in_data["type"] == "0x04":
+                                    if in_data["flag"] == "1":
+                                        routing.neighbour_t_add(in_data["source"], self.addr, 5)
+                                        if routing.neigh_table[routing.find_uuid_in_neighbour_t(in_data["source"])][1] == self.conn :
+                                            self.conn.sendall(Message().ack())
+                                            print "added to neighbour table"
+                                        else: 
+                                            print self.conn
+                                            print routing.neigh_table[routing.find_uuid_in_neighbour_t(in_data["source"])][1]
+                                print "\r" + "(%s, %s): " % self.addr + in_data["source"]
+                        #else:
+                            #break
                     time.sleep(0)
 
             def kill(self):
@@ -120,6 +121,7 @@ def main():
                         chat_server.kill()
                         self.kill()
                     elif text == 'connect_neighbour':
+                        chat_client.host = raw_input("Insert neighbour ip: ")
                         chat_client.start()
                     elif text == 'auth_msg':
                         auth_str = Message().auth_successful()
