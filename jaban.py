@@ -53,28 +53,30 @@ def main():
                         if sock == s:
                             # Handle the case in which there is a new connection recieved through server_socket
                             self.conn, self.addr = s.accept()
-                            CONNECTION_LIST.append(self.conn)
+                            conn_list.append(self.conn)
                             print "Client (%s, %s) connected" % self.addr
                     
                     #for input_item in inputready:
                         else:
                         # Handle sockets
-                            data = self.conn.recv(4096)
-                            if data:
-                                in_data = message().break_message(data)
-                                print in_data
-                                if in_data["type"] == "0x04":
-                                    if in_data["flag"] == "1":
-                                        routing.neighbour_t_add(in_data["source"], self.addr, 5)
-                                        if routing.neigh_table[routing.find_uuid_in_neighbour_t(in_data["source"])][1] == self.conn :
-                                            self.conn.sendall(Message().ack())
-                                            print "added to neighbour table"
-                                        else: 
-                                            print self.conn
-                                            print routing.neigh_table[routing.find_uuid_in_neighbour_t(in_data["source"])][1]
-                                print "\r" + "(%s, %s): " % self.addr + in_data["source"]
+                            try:
+                                data = self.conn.recv(4096)
+                                if data:
+                                    in_data = message().break_message(data)
+                                    print in_data
+                                    if in_data["type"] == "0x04":
+                                        if in_data["flag"] == "1":
+                                            routing.neighbour_t_add(in_data["source"], self.addr, 5)
+                                            if routing.neigh_table[routing.find_uuid_in_neighbour_t(in_data["source"])][1] == self.conn :
+                                                self.conn.sendall(Message().ack())
+                                                print "added to neighbour table"
+                                            else: 
+                                                print self.conn
+                                                print routing.neigh_table[routing.find_uuid_in_neighbour_t(in_data["source"])][1]
+                                    print "\r" + "(%s, %s): " % self.addr + in_data["source"]
+                            except:
                         #else:
-                            #break
+                                break
                     time.sleep(0)
 
             def kill(self):
