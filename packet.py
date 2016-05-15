@@ -116,9 +116,11 @@ class packet():
 	def hopcount(self, hop = " "):
 		return hop
 
-	def length(self, pay = " "):
-		if str(len(pay)) :
-		return leng.encode("ASCII");
+	def length(self, pay):
+		if str(len(pay)) > 0:
+			return leng.encode("ASCII");
+		else:
+			return 0
 
 	def payload(self, pay = " "):
 		return pay
