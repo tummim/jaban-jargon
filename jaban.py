@@ -37,6 +37,10 @@ def main():
                         if data:
                             in_data = message().break_message(data)
                             print in_data
+                            if in_data["type"] == "0x04":
+                                if in_data["flag"] == "1":
+                                    #add to neighbour table neighbour_table{"UUID":in_data["source"], "socket": "%s:%s", "p_timer": ?date()?} % self.addr
+                                    print "added to neighbour table"
                             print "\r" + "(%s, %s): " % self.addr + in_data["source"]
                         else:
                             break

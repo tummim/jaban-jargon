@@ -101,15 +101,15 @@ class packet():
 	def authentication_flag(self, auth_success, no_auth):
 		
 		success = 0 	
-		failed = 0
+		init_auth = 0
 		
 		if (auth_success == True):
 			success = 0x02
 		if (no_auth == True):
-			failed = 0x01
+			init_auth = 0x01
 		
 
-		authflag = success + failed
+		authflag = success + init_auth
 		return str(authflag)	
 
 

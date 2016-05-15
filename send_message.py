@@ -71,20 +71,20 @@ class Message():
 		return chat_msg;
 
 	""" AUTHETICATION MESSAGES """
-	def auth_successful(self):
+	def auth_successful(self): #InitiateAuth
 
 		auth_msg = bytearray()
 		build_packet =  packet()
 		
 		auth_msg.append(build_packet.version())
 		for c in build_packet.source():
-			auth_msg.append(c);
-		for c in build_packet.destination("000000"):
-			auth_msg.append(c);
+			auth_msg.append(c)
+		for c in build_packet.destination("00000000"):
+			auth_msg.append(c)
 		auth_msg.append(build_packet.type("authentication"))		
 		
-		for c in build_packet.authentication_flag(True, False):
-			auth_msg.append(c);
+		for c in build_packet.authentication_flag(False, True):
+			auth_msg.append(c)
 		
 		auth_msg.append(build_packet.hopcount(1))
 		auth_msg.append(build_packet.length(0))
@@ -104,7 +104,7 @@ class Message():
 			auth_msg.append(c);
 		auth_msg.append(build_packet.type("authentication"))		
 		
-		for c in build_packet.authentication_flag(False, True):
+		for c in build_packet.authentication_flag(True, False):
 			auth_msg.append(c);
 		
 		auth_msg.append(build_packet.hopcount(1))
