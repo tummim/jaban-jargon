@@ -76,17 +76,10 @@ def main():
                                             print "self address: " + self.addr[0]+":"+str(self.addr[1])                                        
                                             print routing.neighbour_t_add(in_data["source"], self.addr[0]+":"+str(self.addr[1]), 5)
                                             routing.display_n_table()
-                                            print "self.conn"
-                                            print self.conn
-                                            print conn_list
-                                            if routing.neigh_table[routing.find_uuid_in_neighbour_t(in_data["source"])][1] == self.conn :
+                                            if routing.neigh_table[routing.find_uuid_in_neighbour_t(in_data["source"])][1] == self.conn : #broken?
                                                 self.conn.sendall(Message().ack())
-                                                
-                                                print "added to neighbour table"
-                                                routing.display_n_table()
                                             else: 
-                                                print self.conn
-                                                print routing.neigh_table[routing.find_uuid_in_neighbour_t(in_data["source"])][1]
+                                                print routing.neigh_table[routing.find_uuid_in_neighbour_t(in_data["source"])][1] #broken?
                                     print "\r" + "(%s, %s): " % self.addr + in_data["source"]
                             except:
                         #else:
@@ -141,7 +134,7 @@ def main():
                         chat_client.start()
                     elif text == 'auth_msg':
                         auth_str = Message().auth_successful()
-                        #print auth_st
+                        #print auth_str
                         #auth_str get authent string
                         chat_client.sock.sendall(auth_str)
 

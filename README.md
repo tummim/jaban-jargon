@@ -1,6 +1,8 @@
 # jaban-jargon
 ITC-8061 protocol implementation
 
+Works on Linux and Mac
+
 1) connect_neighbour (asks for neighbour ip - use localhost for local tests)
 
 2) Press enter untill it works (Human check)
