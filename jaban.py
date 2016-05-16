@@ -141,7 +141,7 @@ def main():
                         chat_client.start()
                     elif text == 'auth_msg':
                         auth_str = Message().auth_successful()
-                        #print auth_str
+                        #print auth_st
                         #auth_str get authent string
                         chat_client.sock.sendall(auth_str)
 
