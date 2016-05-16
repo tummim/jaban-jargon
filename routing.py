@@ -10,8 +10,8 @@ class router:
     def __init__(self):
         self.myUUID = None #my own UUID for initial entry
         self.myIPSOC = None #my own IP and sock for initial entry
-        self.neigh_table = [[self.myUUID, self.myIPSOC, "999"]] # [entry nr][0 - UUID/1 - socket(ip:port)/2 - Passive Timer]
-        self.routing_table = [[self.myUUID, self.myUUID, "0"]] # [entry nr][0 - Destination UUID/1 - via UUID/2 - cost(hops)]
+        self.neigh_table = [] # [entry nr][0 - UUID/1 - socket(ip:port)/2 - Passive Timer]  [self.myUUID, self.myIPSOC, 999]
+        self.routing_table = [] # [entry nr][0 - Destination UUID/1 - via UUID/2 - cost(hops)] [self.myUUID, self.myUUID, 0]
 		
     def find_route(self, destination): #finds route to destination
         i = 0
@@ -44,14 +44,21 @@ class router:
         #indicates a connected node via the underlay network. This table is used 
         #to determine where to send an overlay packet through the underlay network.
         i = 0
-        while i < len(self.neigh_table): #checks if entry exists already and updates or adds new entry
-            if self.neigh_table[i][0] == nUUID:
-                self.neigh_table[i][2] = pTimer #update timer, entry already exists
-                if self.neigh_table[i][1] != ipPORT: #ip of nUUID is different, update entry
-                    self.neigh_table[i][1] = ipPORT
-                i = 1000 #cancel search, yeah its ugly
-            else:
+        while i <= len(self.neigh_table): #checks if entry exists already and updates or adds new entry
+            print "in func loop neigh_t_add"
+            print self.neigh_table
+            print len(self.neigh_table)
+            print len(self.neigh_table) == 1
+            if len(self.neigh_table) > 0:
+                if self.neigh_table[i][0] == nUUID:
+                    print "nUUID exists"
+                    self.neigh_table[i][2] = pTimer #update timer, entry already exists
+                    if self.neigh_table[i][1] != ipPORT: #ip of nUUID is different, update entry
+                        self.neigh_table[i][1] = ipPORT
+                    i = 1000 #cancel search, yeah its ugly
+            elif len(self.neigh_table) == 0:
                 self.neigh_table.append([nUUID,ipPORT,pTimer]) #new neighbour, add new entry
+
                 i = 1000 #cancel search, yeah its ugly
             i = i + 1		
             return self.neigh_table
@@ -66,9 +73,10 @@ class router:
         i = 0
         print "---------- Neighbour Table ----------"
         print " | " + "--UUID--" + " | " + "---IP + Port--- " + " | " + "--Timer--" + " | "
-        while i < len(self.neigh_table):
-            print " | " + self.neigh_table[i][0] + " | " + self.neigh_table[i][1] + "|    " + self.neigh_table[i][2] + "    | "
+        while i <= len(self.neigh_table):
+            print " | " + self.neigh_table[i][0] + " | " + self.neigh_table[i][1] + "|    " + str(self.neigh_table[i][2]) + "    | "
             i = i + 1
+        return True
 
     def routing_t_add(self, destUUID, viaUUID, costHops):
         #The routing table is used to determine the next step of a message via an immediate 
@@ -76,7 +84,7 @@ class router:
         #entry, which is the current node with cost 0, and will eventually contain all the 
         #systems in the connected network as a destination via a neighbor.
         i = 0
-        while i < len(self.routing_table): #checks if entry exists already and updates or adds new entry
+        while i <= len(self.routing_table): #checks if entry exists already and updates or adds new entry
             if self.routing_table[i][0] == destUUID and self.routing_table[i][1] == viaUUID:
                 if costHops == self.routing_table[i][2]:
                     pass # Cost is same as before, do nothing
@@ -101,7 +109,9 @@ class router:
         print " | " + "--Dest UUID--" + " | " + "---Via UUID--- " + " | " + "--Cost--" + " | "
         while i < len(self.routing_table):
             print " | " + self.routing_table[i][0] + "      | " + self.routing_table[i][1] + "        |    " + self.routing_table[i][2] + "     | "
-            i = i + 1    
+            i = i + 1  
+            
+        return True
 
 
 

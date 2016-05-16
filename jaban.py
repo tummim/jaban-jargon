@@ -57,19 +57,33 @@ def main():
                             print "Client (%s, %s) connected" % self.addr
                     
                     #for input_item in inputready:
-                        else:
+                        #else:
                         # Handle sockets
                             try:
+
                                 data = self.conn.recv(4096)
                                 if data:
+
                                     in_data = message().break_message(data)
+
                                     print in_data
-                                    if in_data["type"] == "0x04":
+                                    if in_data["type"] == "\x04":
+
+                                        print "type is correct"
                                         if in_data["flag"] == "1":
-                                            routing.neighbour_t_add(in_data["source"], self.addr, 5)
+                                            print "flag is correct"
+                                            print "in_data source: " + in_data["source"]
+                                            print "self address: " + self.addr[0]+":"+str(self.addr[1])                                        
+                                            print routing.neighbour_t_add(in_data["source"], self.addr[0]+":"+str(self.addr[1]), 5)
+                                            routing.display_n_table()
+                                            print "self.conn"
+                                            print self.conn
+                                            print conn_list
                                             if routing.neigh_table[routing.find_uuid_in_neighbour_t(in_data["source"])][1] == self.conn :
                                                 self.conn.sendall(Message().ack())
+                                                
                                                 print "added to neighbour table"
+                                                routing.display_n_table()
                                             else: 
                                                 print self.conn
                                                 print routing.neigh_table[routing.find_uuid_in_neighbour_t(in_data["source"])][1]
