@@ -145,11 +145,9 @@ def main():
                         #auth_str get authent string
                         chat_client.sock.sendall(auth_str)
 
-                        
-                    else:
                         try:
                             chat_client.sock.sendall(text)
-                            chat_client.kill()
+                            #chat_client.kill()
                         except:
                             Exception
 
