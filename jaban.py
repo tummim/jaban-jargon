@@ -35,6 +35,7 @@ def main():
             def run(self):
                 HOST = ''
                 conn_list = []
+                conn_out_list = []
                 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
                 s.bind((HOST,self.PORT))
@@ -46,7 +47,7 @@ def main():
                 # Select loop for listen
                 while self.running == True:
                     #inputready,outputready,exceptready = select.select ([self.conn],[self.conn],[])
-                    inputready,outputready,exceptready = select.select (conn_list,[],[])
+                    inputready,outputready,exceptready = select.select (conn_list,conn_out_list,[])
 
                     for sock in inputready:
                         #New connection
@@ -73,7 +74,10 @@ def main():
                                         if in_data["flag"] == "1":
                                             print "flag is correct"
                                             print "in_data source: " + in_data["source"]
-                                            print "self address: " + self.addr[0]+":"+str(self.addr[1])                                        
+                                            print "self address: " + str(self.addr[0])+":"+str(self.addr[1])                                        
+                                            print "con out list: " + str(conn_out_list)
+                                            print "con in list: " + str(conn_list)
+                                            print "soc in list: " + str(conn_list[2].getname())
                                             print routing.neighbour_t_add(in_data["source"], str(self.addr[0])+":"+str(self.addr[1]), 5)
                                             routing.display_n_table()
                                             if routing.neigh_table[routing.find_uuid_in_neighbour_t(in_data["source"])][1] == self.conn : #broken?
