@@ -66,6 +66,7 @@ def main():
                                 if data:
 
                                     in_data = message().break_message(data)
+                                    print "data message: " + in_data
 
                                     print in_data
                                     if in_data["type"] == "\x04":
@@ -84,6 +85,15 @@ def main():
                                                 self.conn.sendall(Message().ack())
                                             else: 
                                                 print routing.neigh_table[routing.find_uuid_in_neighbour_t(in_data["source"])][1] #broken?
+                                    elif in_data["type"] == "\x01":
+                                        print "data message: " + in_data
+                                        if in_data["flag"] == "4":
+                                                #some cyckle to get all the in data
+                                                #autorization
+                                                #check if correct destination
+
+                                            print "(%s): %s" % in_data["source"], in_data["payload"]
+
                                     print "\r" + "(%s, %s): " % self.addr + in_data["source"]
                             except:
                         #else:
@@ -141,15 +151,21 @@ def main():
                         #print auth_str
                         #auth_str get authent string
                         chat_client.sock.sendall(auth_str)
-                    #else:
+                    else:
+                    #check if message is longer than max limit and make it into an array
+                        whole_message = message().payload(text)
+                        Message().chat_message("hello")
+                        print whole_message
                         try:
-                            chat_client.sock.sendall(text)
+                            for i in whole_message:
+                                chat_client.sock.sendall(Message().chat_message(i))
                             #chat_client.kill()
                         except:
                             Exception
 
                         try:
-                            chat_server.conn.sendall(text)
+                            for i in whole_message:
+                                chat_server.conn.sendall(Message().chat_message(i))
                         except:
                             Exception
 

@@ -47,7 +47,7 @@ class message:
 		#Length - Length of the payload - (Integer in a single byte)
 		return payload_len
 
-	def payload(data):
+	def payload(self, data):
 		#Payload - The content of the message - (ASCII String)
 		data=data.encode("utf8")
 		total_len = len(data)

@@ -49,7 +49,7 @@ class Message():
 
 		return file_msg;
 
-	def chat_message(self):
+	def chat_message(self, data):
 
 		chat_msg = bytearray()
 		build_packet =  packet()
@@ -65,8 +65,8 @@ class Message():
 			chat_msg.append(c);
 		
 		chat_msg.append(build_packet.hopcount(1))
-		chat_msg.append(build_packet.length())
-		chat_msg.append(build_packet.payload())
+		chat_msg.append(build_packet.length(len(data)))
+		chat_msg.append(build_packet.payload(data.encode("utf-8")))
 
 		return chat_msg;
 

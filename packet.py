@@ -122,8 +122,11 @@ class packet():
 		else:
 			return 0
 
-	def payload(self, pay = " "):
-		return pay
+	def payload(self, pay):
+		if len(pay) > 0:
+			return pay
+		else:
+			return " "
 """
 	def packet(self):
 		#some_type = "authentication" 
