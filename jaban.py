@@ -74,7 +74,7 @@ def main():
                                             print "flag is correct"
                                             print "in_data source: " + in_data["source"]
                                             print "self address: " + self.addr[0]+":"+str(self.addr[1])                                        
-                                            print routing.neighbour_t_add(in_data["source"], self.addr[0]+":"+str(self.addr[1]), 5)
+                                            print routing.neighbour_t_add(in_data["source"], str(self.addr[0])+":"+str(self.addr[1]), 5)
                                             routing.display_n_table()
                                             if routing.neigh_table[routing.find_uuid_in_neighbour_t(in_data["source"])][1] == self.conn : #broken?
                                                 self.conn.sendall(Message().ack())
