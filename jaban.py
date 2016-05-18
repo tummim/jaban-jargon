@@ -154,7 +154,6 @@ def main():
                     else:
                     #check if message is longer than max limit and make it into an array
                         whole_message = message().payload(text)
-                        Message().chat_message("hello")
                         print whole_message
                         try:
                             for i in whole_message:

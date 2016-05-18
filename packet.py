@@ -123,7 +123,7 @@ class packet():
 			return 0
 
 	def payload(self, pay):
-		if len(pay) > 0:
+		if len(pay) == 1:
 			return pay
 		else:
 			return " "

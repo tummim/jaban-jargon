@@ -66,7 +66,8 @@ class Message():
 		
 		chat_msg.append(build_packet.hopcount(1))
 		chat_msg.append(build_packet.length(len(data)))
-		chat_msg.append(build_packet.payload(data.encode("utf-8")))
+		for n in data:
+			chat_msg.append(build_packet.payload(n.encode("utf-8")))
 
 		return chat_msg;
 
