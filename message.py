@@ -54,7 +54,7 @@ class message:
 		max_len = 79
 		data_array = []
 		if total_len > max_len:
-			for index in range(0,len(data_l),max_len):
+			for index in range(0,len(data),max_len):
 				data_array.append(data[index:index+max_len])
 		else:
 			data_array.append(data)

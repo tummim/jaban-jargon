@@ -113,7 +113,7 @@ class packet():
 		return str(authflag)	
 
 
-	def hopcount(self, hop = " "):
+	def hopcount(self, hop):
 		return hop
 
 	def length(self, pay):

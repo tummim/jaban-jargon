@@ -60,44 +60,56 @@ def main():
                     #for input_item in inputready:
                         #else:
                         # Handle sockets
-                            try:
+                        try:
 
-                                data = self.conn.recv(4096)
-                                if data:
+                            data = self.conn.recv(4096)
+                            if data:
 
-                                    in_data = message().break_message(data)
-                                    print "data message: " + in_data
-
+                                in_data = message().break_message(data)
+                                #print "data message: " + in_data
+                                
+                                print in_data
+                                if in_data["type"] == "\x04":
+                                    print "type is correct"
+                                    if in_data["flag"] == "1":
+                                        print "flag is correct"
+                                        print "in_data source: " + in_data["source"]
+                                        print "self address: " + str(self.addr[0])+":"+str(self.addr[1])                                        
+                                        print "con out list: " + str(conn_out_list)
+                                        print "con in list: " + str(conn_list)
+                                        print "soc in list: " + str(conn_list[2]) # can't use getname()
+                                        print routing.neighbour_t_add(in_data["source"], str(self.addr[0])+":"+str(self.addr[1]), 5)
+                                        routing.display_n_table()
+                                            #if routing.neigh_table[routing.find_uuid_in_neighbour_t(in_data["source"])][1] == self.conn : #broken?
+                                                #self.conn.sendall(Message().ack())
+                                            #else: 
+                                        print routing.neigh_table[routing.find_uuid_in_neighbour_t(in_data["source"])][1] #broken?
+                                elif in_data["type"] == "\x01":
+                                    print "data message: "
                                     print in_data
-                                    if in_data["type"] == "\x04":
-
-                                        print "type is correct"
-                                        if in_data["flag"] == "1":
-                                            print "flag is correct"
-                                            print "in_data source: " + in_data["source"]
-                                            print "self address: " + str(self.addr[0])+":"+str(self.addr[1])                                        
-                                            print "con out list: " + str(conn_out_list)
-                                            print "con in list: " + str(conn_list)
-                                            print "soc in list: " + str(conn_list[2].getname())
-                                            print routing.neighbour_t_add(in_data["source"], str(self.addr[0])+":"+str(self.addr[1]), 5)
-                                            routing.display_n_table()
-                                            if routing.neigh_table[routing.find_uuid_in_neighbour_t(in_data["source"])][1] == self.conn : #broken?
-                                                self.conn.sendall(Message().ack())
-                                            else: 
-                                                print routing.neigh_table[routing.find_uuid_in_neighbour_t(in_data["source"])][1] #broken?
-                                    elif in_data["type"] == "\x01":
-                                        print "data message: " + in_data
-                                        if in_data["flag"] == "4":
+                                    whole_inc_message = ""
+                                    if in_data["flag"] == "4":
                                                 #some cyckle to get all the in data
                                                 #autorization
                                                 #check if correct destination
+                                        whole_inc_message = whole_inc_message + in_data["payload"]
+                                        self.conn.sendall(Message().ack())
+                                        #socet_data(self.conn, Message().ack())
 
-                                            print "(%s): %s" % in_data["source"], in_data["payload"]
+                                    if in_data["flag"] =="1":
+                                        whole_inc_message = whole_inc_message + in_data["payload"]
+                                        print "(%s): %s" % in_data["source"], whole_inc_message #in_data["payload"]
+                                        self.conn.sendall(Message().ack())
 
-                                    print "\r" + "(%s, %s): " % self.addr + in_data["source"]
-                            except:
+                                elif in_data["type"] == "\x02":
+                                    if in_data["flag"] == "4":
+                                        print "ack received: " + in_data["source"]
+
+                                    #print "\r" + "(%s, %s): " % self.addr + in_data["source"]
+                        except Exception, e:
                         #else:
-                                break
+                            print e
+                    
                     time.sleep(0)
 
             def kill(self):
@@ -120,8 +132,39 @@ def main():
                     inputready,outputready,exceptready = select.select ([self.sock],[self.sock],[])
                     for input_item in inputready:
                         # Handle sockets
-                        data = self.sock.recv(1024)
+                        data = self.sock.recv(4096)
                         if data:
+                            in_data = message().break_message(data)
+                            #print "data message: " + str(in_data)
+                                    
+                            print in_data
+                            if in_data["type"] == "\x04":
+                                print "type is correct"
+                                if in_data["flag"] == "1":
+                                    if routing.neigh_table[routing.find_uuid_in_neighbour_t(in_data["source"])][1] == self.sock : #broken?
+                                        self.sock.sendall(Message().ack())
+                                    else: 
+                                        print routing.neigh_table[routing.find_uuid_in_neighbour_t(in_data["source"])][1] #broken?
+                                
+                            elif in_data["type"] == "\x01":
+                                print "data message: "
+                                print in_data
+                                whole_inc_message = ""
+                                if in_data["flag"] == "4":
+                                                #some cyckle to get all the in data
+                                                #autorization
+                                                #check if correct destination
+                                   whole_inc_message = whole_inc_message + in_data["payload"]
+                                   self.sock.sendall(Message().ack())
+
+                                elif in_data["flag"] =="1":
+                                    whole_inc_message = whole_inc_message + in_data["payload"]
+                                    print "(%s): %s" % in_data["source"], whole_inc_message #in_data["payload"]
+                                    self.sock.sendall(Message().ack())
+                            elif in_data["type"] == "\x02":
+                                if in_data["flag"] == "4":
+                                    print "ack received: " + in_data["source"]
+
                             print "\r" + "(%s, %s): " % (self.host, PORT) + data
                         else:
                             break
@@ -141,8 +184,18 @@ def main():
                     
                     text = raw_input('')
                     if text == 'kill_me':
-                        chat_server.kill()
-                        self.kill()
+                        try:
+                            chat_server.kill()
+                        except Exception, e:
+                            raise e
+                        try:
+                            chat_client.kill()
+                        except Exception, e:
+                            raise e    
+                        try:
+                            self.kill()
+                        except Exception, e:
+                            raise e
                     elif text == 'connect_neighbour':
                         chat_client.host = raw_input("Insert neighbour ip: ")
                         chat_client.start()
