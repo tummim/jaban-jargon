@@ -49,7 +49,7 @@ class Message():
 
 		return file_msg;
 
-	def chat_message(self, data):
+	def chat_message(self, data, last):
 
 		chat_msg = bytearray()
 		build_packet =  packet()
@@ -61,8 +61,12 @@ class Message():
 			chat_msg.append(c);
 		chat_msg.append(build_packet.type("data"))		
 		
-		for c in build_packet.data_flag(False, False, False, True, False, False):
-			chat_msg.append(c);
+		if last == True:
+			for c in build_packet.data_flag(False, False, False, False, False, True):
+				chat_msg.append(c);
+		else:
+			for c in build_packet.data_flag(False, False, False, True, False, False):
+				chat_msg.append(c);
 		
 		chat_msg.append(build_packet.hopcount(15))
 		chat_msg.append(build_packet.length(len(data)))

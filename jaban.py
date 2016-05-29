@@ -56,7 +56,8 @@ def main():
                             self.conn, self.addr = s.accept()
                             conn_list.append(self.conn)
                             print "Client (%s, %s) connected" % self.addr
-                    
+                            sys.stdout.flush()
+
                     #for input_item in inputready:
                         #else:
                         # Handle sockets
@@ -106,10 +107,14 @@ def main():
                                         print "ack received: " + in_data["source"]
 
                                     #print "\r" + "(%s, %s): " % self.addr + in_data["source"]
+                            
                         except Exception, e:
                         #else:
-                            print e
+                            #print "Server e: "
+                            #print e
+                            break
                     
+                    sys.stdout.flush()
                     time.sleep(0)
 
             def kill(self):
@@ -119,14 +124,17 @@ def main():
 
             def __init__(self):
                 threading.Thread.__init__(self)
-                self.host = None
+                #self.host = None
                 self.sock = None
+                #self.port = None
+                self.HOST = None
+                self.PORT = None
                 self.running = 1
 
-            def run(self):
-                PORT = int(raw_input("Insert neighbour port: "))
+            def run(self): 
                 self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                self.sock.connect((self.host, PORT))
+                #self.sock.bind(('', self.port))
+                self.sock.connect((self.HOST, int(self.PORT)))
                 # Select loop for listen
                 while self.running == True:
                     inputready,outputready,exceptready = select.select ([self.sock],[self.sock],[])
@@ -157,7 +165,7 @@ def main():
                                    whole_inc_message = whole_inc_message + in_data["payload"]
                                    self.sock.sendall(Message().ack())
 
-                                elif in_data["flag"] =="1":
+                                elif in_data["flag"] =="5":
                                     whole_inc_message = whole_inc_message + in_data["payload"]
                                     print "(%s): %s" % in_data["source"], whole_inc_message #in_data["payload"]
                                     self.sock.sendall(Message().ack())
@@ -165,7 +173,8 @@ def main():
                                 if in_data["flag"] == "4":
                                     print "ack received: " + in_data["source"]
 
-                            print "\r" + "(%s, %s): " % (self.host, PORT) + data
+                            print "\r" + "(%s, %s): " % (self.HOST, self.PORT) + data
+                            sys.stdout.flush()
                         else:
                             break
 
@@ -186,18 +195,22 @@ def main():
                     if text == 'kill_me':
                         try:
                             chat_server.kill()
+                            sys.stdout.flush()
                         except Exception, e:
-                            raise e
+                            print e
                         try:
                             chat_client.kill()
+                            sys.stdout.flush()
                         except Exception, e:
-                            raise e    
+                            print e    
                         try:
                             self.kill()
+                            sys.stdout.flush()
                         except Exception, e:
-                            raise e
+                            print e
                     elif text == 'connect_neighbour':
-                        chat_client.host = raw_input("Insert neighbour ip: ")
+                        chat_client.HOST = raw_input("Insert neighbour ip: ")
+                        chat_client.PORT = int(raw_input("Insert neighbour port: "))
                         chat_client.start()
                     elif text == 'auth_msg':
                         auth_str = Message().auth_successful()
@@ -209,34 +222,43 @@ def main():
                         whole_message = message().payload(text)
                         print whole_message
                         try:
-                            for i in whole_message:
-                                chat_client.sock.sendall(Message().chat_message(i))
+                            for i in range(len(whole_message)):
+                                if i == len(whole_message):
+                                    chat_client.sock.sendall(Message().chat_message(whole_message[i], True))
+                                else:
+                                    chat_client.sock.sendall(Message().chat_message(whole_message[i], False))
                             #chat_client.kill()
-                        except:
-                            Exception
-
+                        except Exception, e:
+                            print "Text input e client: "
+                            print e
+                        
                         try:
-                            for i in whole_message:
-                                chat_server.conn.sendall(Message().chat_message(i))
-                        except:
-                            Exception
+                            for i in range(len(whole_message)):
+                                if i == len(whole_message):
+                                    chat_server.conn.sendall(Message().chat_message(whole_message[i], True))
+                                else:
+                                    chat_server.conn.sendall(Message().chat_message(whole_message[i], False))
+                        except Exception, e:
+                            print "Text input e server: "
+                            print e
 
+                    sys.stdout.flush()
                     time.sleep(0)
 
             def kill(self):
                 self.running = 0
 
     # Prompt, object instantiation, and threads start here.
-
+    
     PORT = raw_input("Insert my port: ")
     routing = router()
     routing.myUUID = packet().source()
     routing.myIPSOC = PORT
     chat_server = Chat_Server()
-    chat_server.PORT = int(PORT)
     chat_client = Chat_Client()
-    chat_server.start()
     text_input = Text_Input()
+    chat_server.PORT = int(PORT)
+    chat_server.start()
     text_input.start()
 
 if __name__ == "__main__":
