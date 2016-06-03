@@ -20,6 +20,8 @@ def main():
                 self.conn = None
                 self.addr = None
                 self.PORT = None
+                self.accept_file = no
+                self.file_name = ''
 
             def socet_data (self, sock, message):
             #Do not send the message to master socket and the client who has send us the message
@@ -102,11 +104,56 @@ def main():
                                     self.conn.sendall(Message().ack())
                                     #socet_data(self.conn, Message().ack())
 
-                                if in_data["flag"] =="1":
+                                elif in_data["flag"] =="1":
                                     whole_inc_message.append(in_data["payload"])
                                     print "(" + in_data["source"] + "): " + ''.join(whole_inc_message) #in_data["payload"]
                                     self.conn.sendall(Message().ack())
                                     whole_inc_message=[]
+
+                                elif in_data["flag"] == "8" and self.accept_file == "y":
+                                    print "file transfer"
+                                    f = open(self.file_name, 'a')
+                                    try:
+                                        f.write(in_data["payload"])
+                                        f.close()
+                                    except Exception, e:
+                                        f.close()
+
+                                elif in_data["flag"] =="1" and self.accept_file == "y":
+                                    print "file transfer"
+                                    f = open(self.file_name, 'a')
+                                    try:
+                                        f.write(in_data["payload"])
+                                        f.close()
+                                    except Exception, e:
+                                        f.close()
+                                    self.accept_file = "No":    
+                                    self.sock.sendall(Message().ack())
+                                    sys.stdout.flush()
+
+
+                            elif in_data["type"] == "\x02":
+                                if in_data["flag"] == "20":
+                                    file_name_l = []
+                                    file_size_l = []
+                                    flie_name_s = False
+                                    file_size_s = False
+                                    for m in in_data["payload"]:
+                                        if m != "0" and flie_name_s == False:
+                                            file_name_l.append(m)
+                                        elif m == "0" and flie_name_s == False:
+                                            flie_name_s = True
+                                        elif m != "0" and flie_name_s == True:
+                                            file_size_l.append(m)
+                                            file_size_s = True
+                                        elif m == "0" and file_size_s == True:
+                                            file_size_l.append(m)
+                                    
+                                    self.file_name = ''.join(file_name_l)
+                                    file_size = ''.join(file_size_l)
+
+                                    print "receiving file " + file_name + " size: " file_size
+                                    self.accept_file = raw_input('Accept file (y/n):')
 
                             elif in_data["type"] == "\x02":
                                 if in_data["flag"] == "4":
@@ -137,6 +184,8 @@ def main():
                 self.HOST = None
                 self.PORT = None
                 self.running = 1
+                self.accept_file = no
+                self.file_name = ''
 
             def run(self): 
                 self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -170,15 +219,65 @@ def main():
                                     whole_inc_message.append(in_data["payload"])
                                     self.sock.sendall(Message().ack())
 
-                                elif in_data["flag"] =="1":
+                                elif in_data["flag"] == "8" and self.accept_file == "y":
+                                    print "file transfer"
+                                    f = open(self.file_name, 'a')
+                                    try:
+                                        f.write(in_data["payload"])
+                                        f.close()
+                                    except Exception, e:
+                                        f.close()
+
+                                    self.sock.sendall(Message().ack())
+                                    sys.stdout.flush()
+
+                                elif in_data["flag"] =="1" and self.accept_file == "y":
+                                    print "file transfer"
+                                    f = open(self.file_name, 'a')
+                                    try:
+                                        f.write(in_data["payload"])
+                                        f.close()
+                                    except Exception, e:
+                                        f.close()
+                                    self.accept_file = "No":    
+                                    self.sock.sendall(Message().ack())
+                                    sys.stdout.flush()
+
+                                elif in_data["flag"] =="1" and self.accept_file == "No":
                                     whole_inc_message.append(in_data["payload"])
                                     print "("+in_data["source"]+"): "+ ''.join(whole_inc_message) #in_data["payload"]
                                     whole_inc_message = []
                                     self.sock.sendall(Message().ack())
+
+                            #file transfer init
+                            elif in_data["type"] == "\x02":
+                                if in_data["flag"] == "20":
+                                    file_name_l = []
+                                    file_size_l = []
+                                    flie_name_s = False
+                                    file_size_s = False
+                                    for m in in_data["payload"]:
+                                        if m != "0" and flie_name_s == False:
+                                            file_name_l.append(m)
+                                        elif m == "0" and flie_name_s == False:
+                                            flie_name_s = True
+                                        elif m != "0" and flie_name_s == True:
+                                            file_size_l.append(m)
+                                            file_size_s = True
+                                        elif m == "0" and file_size_s == True:
+                                            file_size_l.append(m)
                                     
+                                    self.file_name = ''.join(file_name_l)
+                                    file_size = ''.join(file_size_l)
+
+                                    print "receiving file " + file_name + " size: " file_size
+                                    self.accept_file = raw_input('Accept file (y/n):')
+
                             elif in_data["type"] == "\x02":
                                 if in_data["flag"] == "4":
                                     print "ack received: " + in_data["source"]
+
+
 
                             #print "\r" + "(%s, %s): " % (self.HOST, self.PORT) + data
                             sys.stdout.flush()
@@ -223,20 +322,59 @@ def main():
                         auth_str = Message().auth_successful()
                         #print auth_str
                         #auth_str get authent string
-                        chat_client.sock.sendall(auth_str)
-                    else:
-                    #check if message is longer than max limit and make it into an array
-                        whole_message = message().payload(text)
-                        print whole_message
-                        print range(len(whole_message)-1)
-                        print len(whole_message)-1
+                        try:
+                            chat_client.sock.sendall(auth_str)
+                        except Exception, e:
+                            sys.stdout.flush()
+                        #try:
+                        #    chat_server.sock.sendall(auth_str)
+                        #except Exception, e:
+                        #    sys.stdout.flush()
+                    elif text == 'send_file':
+                        file_to_send = raw_input("Type the name of the file to send: ")
+                        with open(file_to_send,'rb') as fts:
+                            content = fts.read()
+
+                        whole_message = message().payload(content)
                         if len(whole_message) > 0 and whole_message != ['']:
                             try:
                                 for i in range(len(whole_message)):
-                                    print range(len(whole_message))
-                                    print i
-                                    print len(whole_message)-1
-                                    print whole_message[i]
+                                    if i == (len(whole_message)-1):
+                                        chat_client.sock.sendall(Message().file_message(whole_message[i], True))
+                                    else:
+                                        chat_client.sock.sendall(Message().file_message(whole_message[i], False))
+                            except Exception, e:
+                                #print "Text input e client: "
+                                #print e
+                                sys.stdout.flush()
+
+                            try:
+                                for i in range(len(whole_message)):
+                                    if i == (len(whole_message)-1):
+                                        chat_server.conn.sendall(Message().file_message(whole_message[i], True))
+                                    else:
+                                        chat_server.conn.sendall(Message().file_message(whole_message[i], False))
+                            except Exception, e:
+                                #print "Text input e server: "
+                                #print e
+                                sys.stdout.flush()
+                    elif text == 'routing_u':
+
+                    elif text == 'ack':
+                        try:
+                            chat_server.conn.sendall(Message().ack()
+                        except Exception, e:
+                            sys.stdout.flush()
+                        try:
+                            chat_client.sock.sendall(Message().ack())
+                        except Exception, e:
+                            sys.stdout.flush()
+                    else:
+                    #check if message is longer than max limit and make it into an array
+                        whole_message = message().payload(text)
+                        if len(whole_message) > 0 and whole_message != ['']:
+                            try:
+                                for i in range(len(whole_message)):
                                     if i == (len(whole_message)-1):
                                         chat_client.sock.sendall(Message().chat_message(whole_message[i], True))
                                     else:

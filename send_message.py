@@ -28,7 +28,7 @@ class Message():
 		return auth_msg;
 
 	
-	def file_message(self):
+	def file_message(self, data, last):
 
 		file_msg = bytearray()
 		build_packet =  packet()
@@ -40,12 +40,18 @@ class Message():
 			file_msg.append(c);
 		file_msg.append(build_packet.type("data"))		
 		
-		for c in build_packet.data_flag(False, False, True, False, False, False):
-			file_msg.append(c);
+		if last == True:
+			for c in build_packet.data_flag(False, False, False, False, False, True):
+				file_msg.append(c);
+		else:
+			for c in build_packet.data_flag(False, False, True, False, False, False):	
+				file_msg.append(c);	
+		#for c in build_packet.data_flag(False, False, True, False, False, False):
+			
 		
-		file_msg.append(build_packet.hopcount(1))
-		file_msg.append(build_packet.length())
-		file_msg.append(build_packet.payload())
+		file_msg.append(build_packet.hopcount(15))
+		file_msg.append(build_packet.length(len(data)))
+		file_msg.append(build_packet.payload(data))
 
 		return file_msg;
 
@@ -141,7 +147,7 @@ class Message():
 
 		return control_msg;
 
-	def file_transfer_init(self):
+	def file_transfer_init(self, data):
 
 		control_msg = bytearray()
 		build_packet =  packet()
@@ -157,12 +163,19 @@ class Message():
 			control_msg.append(c);
 		
 		control_msg.append(build_packet.hopcount())
-		control_msg.append(build_packet.length())
-		control_msg.append(build_packet.payload())
+		control_msg.append(build_packet.length(len(data)))
+		for n in data:
+			control_msg.append(build_packet.payload(n.encode("utf-8")))
+		#get size of the file
+		file_size=os.path.getsize('data')
 
+		while len(control_msg) + len(file_size) != 100:
+			control_msg.append('0')
+
+		control_msg.append(file_size)
 		return control_msg;
 
-	def routing_update_init(self):
+	def routing_update_init(self, data):
 
 		control_msg = bytearray()
 		build_packet =  packet()
@@ -177,9 +190,9 @@ class Message():
 		for c in build_packet.control_flag(False, False, True, False, False, False, False):
 			control_msg.append(c);
 		
-		control_msg.append(build_packet.hopcount())
-		control_msg.append(build_packet.length())
-		control_msg.append(build_packet.payload())
+		control_msg.append(build_packet.hopcount(15))
+		control_msg.append(build_packet.length(len(data)))
+		control_msg.append(build_packet.payload(data))
 
 		return control_msg;
 
