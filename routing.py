@@ -46,9 +46,9 @@ class router:
         i = 0
         while i <= len(self.neigh_table): #checks if entry exists already and updates or adds new entry
             print "in func loop neigh_t_add"
-            print self.neigh_table
-            print len(self.neigh_table)
-            print len(self.neigh_table) == 1
+            #print self.neigh_table
+            #print len(self.neigh_table)
+            #print len(self.neigh_table) == 1
             if len(self.neigh_table) > 0:
                 if self.neigh_table[i][0] == nUUID:
                     print "nUUID exists"
@@ -62,6 +62,18 @@ class router:
                 i = 1000 #cancel search, yeah its ugly
             i = i + 1		
             return self.neigh_table
+    def neighbour_t_remove(self, nUUID):
+    	#removes a row from neighbour table that with the nUUID 
+    	for i in range(len(self.neigh_table)):
+    		if len(self.neigh_table) > 0:
+                if self.neigh_table[i][0] == nUUID:
+                    del self.neigh_table[i][2]
+                    del self.neigh_table[i][1]
+                    del self.neigh_table[i][0]
+                    print "Route to "+ nUUID +" removed!"
+
+    def neighbour_t_clear(self):
+    	self.neigh_table = []
 
     def find_uuid_in_neighbour_t(self,sUUID):
     	i=0
@@ -113,8 +125,18 @@ class router:
             
         return True
 
+    def clear_r_table(self):
+    	self.routing_table = []
 
-
+    def remove_from_r_table(self, destination):
+    	#deletes routing table row by destination
+    	i=0
+    	while i < len(self.routing_table): #finds destination in routing table
+            if self.routing_table[i][0] == destination
+            	del elf.routing_table[i][2]
+            	del elf.routing_table[i][1]
+            	del elf.routing_table[i][0]
+            i += 1
 """
 #some test data and tests
 

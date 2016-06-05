@@ -320,16 +320,14 @@ def main():
                         chat_client.start()
                     elif text == 'auth_msg':
                         auth_str = Message().auth_successful()
-                        #print auth_str
-                        #auth_str get authent string
                         try:
                             chat_client.sock.sendall(auth_str)
                         except Exception, e:
                             sys.stdout.flush()
-                        #try:
-                        #    chat_server.sock.sendall(auth_str)
-                        #except Exception, e:
-                        #    sys.stdout.flush()
+                        try:
+                            chat_server.sock.sendall(auth_str)
+                        except Exception, e:
+                            sys.stdout.flush()
                     elif text == 'send_file':
                         file_to_send = raw_input("Type the name of the file to send: ")
                         with open(file_to_send,'rb') as fts:
@@ -359,7 +357,41 @@ def main():
                                 #print e
                                 sys.stdout.flush()
                     elif text == 'routing_u':
-
+                        routing_u_m = ''.join(routing.routing_table)
+                        try:
+                            chat_client.sock.sendall(Message().routing_update_init(routing_u_m))
+                        except Exception, e:
+                            sys.stdout.flush()
+                        try:
+                            chat_server.conn.sendall(Message().routing_update_init(routing_u_m))
+                        except Exception, e:
+                            sys.stdout.flush()
+                    elif text == 'add_route':
+                        destUUID = raw_input("Insert UUID of the destination: ")
+                        viaUUID = raw_input("Innsert UIID of the next hop: ")
+                        costHops = raw_input("Insert cost of hops: ")
+                        router.routing_t_add(destUUID, viaUUID, costHops)
+                        print "route added"
+                    elif text == 'del_route':
+                        dest = raw_input("insert a destination to be deleted: ")
+                        router.remove_from_r_table(dest)
+                    elif text == 'clear_rt':
+                        router.clear_r_table()
+                    elif text == 'show_rt':
+                        routing.display_r_table()
+                    elif text == 'insert_neighbour':                    
+                        nUUID = raw_input("Insert UUID of the new route: ")
+                        nIP = raw_input("Innsert ip of the new route: ")
+                        nPORT = raw_input("Insert port of the new route: ")
+                        routing.neighbour_t_add(nUUID,nIP+":"+nPORT, 30)
+                        print "neighbour added"
+                    elif text == 'del_neighbour':
+                        dUUID = raw_input("Insert UUID to be romoved from routing table: ")
+                        if len(dUUID) != 0:
+                            routing.neighbour_t_remove(self, dUUID)
+                    elif text == 'clear_nt':
+                        routing.neighbour_t_clear()
+                        print "Neighbour table cleared"
                     elif text == 'ack':
                         try:
                             chat_server.conn.sendall(Message().ack()
@@ -405,8 +437,13 @@ def main():
     
     PORT = raw_input("Insert my port: ")
     routing = router()
-    routing.myUUID = packet().source()
-    routing.myIPSOC = PORT
+    routing.myUUID = raw_input("insert my UUID (8 characters): ").encode("ASCII")
+    pakk = packet()
+    pakk.uuid = routing.myUUID
+    routing.myIPSOC = "127.0.0.1:"+PORT
+    #add 1. data to routing and neighbour table
+    routing.neighbour_t_add(routing.myUUID,routing.myIPSOC, 30)
+    router.routing_t_add(routing.myUUID, routing.myUUID, 0)
     chat_server = Chat_Server()
     chat_client = Chat_Client()
     text_input = Text_Input()

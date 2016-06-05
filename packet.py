@@ -17,22 +17,25 @@ class packet():
 	"""This is the Message Class"""
 
 	config =  ConfigParser.ConfigParser()
+	def __init__(self)
+		self.uuid = '796326ED'
+		self.dst = ''
 
 	def version(self , ver = 0x01):		
 		return ver;
 
 
-	def source(self, uuid=""):
+	def source(self):
 		#pgps = pgp()
 		#uuid = pgps.key()
-		config.read('config.ini')
-		uuid = config.get('Global', 'source')
-		return uuid.encode("ASCII");
+		#config.read('config.ini')
+		#uuid = config.get('Global', 'source')
+		return self.uuid.encode("ASCII")
 		
 
 
-	def destination(self, dst = " "):
-		return dst;
+	def destination(self):
+		return self.dst;
 
 	def type(self, messsage_type):
 		if (messsage_type == "data"):
@@ -126,7 +129,7 @@ class packet():
 		if len(pay) == 1:
 			return pay
 		else:
-			return " "
+			return ""
 """
 	def packet(self):
 		#some_type = "authentication" 
