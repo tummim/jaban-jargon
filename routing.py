@@ -45,7 +45,7 @@ class router:
         #to determine where to send an overlay packet through the underlay network.
         i = 0
         while i <= len(self.neigh_table): #checks if entry exists already and updates or adds new entry
-            print "in func loop neigh_t_add"
+            #print "in func loop neigh_t_add"
             #print self.neigh_table
             #print len(self.neigh_table)
             #print len(self.neigh_table) == 1
@@ -61,16 +61,16 @@ class router:
 
                 i = 1000 #cancel search, yeah its ugly
             i = i + 1		
+
             return self.neigh_table
-    def neighbour_t_remove(self, nUUID):
-    	#removes a row from neighbour table that with the nUUID 
-    	for i in range(len(self.neigh_table)):
-    		if len(self.neigh_table) > 0:
-                if self.neigh_table[i][0] == nUUID:
-                    del self.neigh_table[i][2]
-                    del self.neigh_table[i][1]
-                    del self.neigh_table[i][0]
-                    print "Route to "+ nUUID +" removed!"
+
+	def neighbour_t_remove(self, nUUID):
+		#removes a row from neighbour table that with the nUUID 
+		for i in range(len(self.neigh_table)):
+			if len(self.neigh_table) > 0:
+				if self.neigh_table[i-1][0] == nUUID:
+					del self.neigh_table[i-1]
+					print "Neighbour "+ nUUID +" removed!"
 
     def neighbour_t_clear(self):
     	self.neigh_table = []
@@ -85,9 +85,9 @@ class router:
         i = 0
         print "---------- Neighbour Table ----------"
         print " | " + "--UUID--" + " | " + "---IP + Port--- " + " | " + "--Timer--" + " | "
-        while i <= len(self.neigh_table):
-            print " | " + self.neigh_table[i][0] + " | " + self.neigh_table[i][1] + "|    " + str(self.neigh_table[i][2]) + "    | "
-            i = i + 1
+        for i in range(len(self.neigh_table)):
+            print " | " + self.neigh_table[i-1][0] + " | " + self.neigh_table[i-1][1] + "|    " + str(self.neigh_table[i-1][2]) + "    | "
+            
         return True
 
     def routing_t_add(self, destUUID, viaUUID, costHops):
@@ -97,7 +97,7 @@ class router:
         #systems in the connected network as a destination via a neighbor.
         i = 0
         while i <= len(self.routing_table): #checks if entry exists already and updates or adds new entry
-            if self.routing_table[i][0] == destUUID and self.routing_table[i][1] == viaUUID:
+            if len(self.routing_table) > 0 and self.routing_table[i][0] == destUUID and self.routing_table[i][1] == viaUUID:
                 if costHops == self.routing_table[i][2]:
                     pass # Cost is same as before, do nothing
                     i = 1000 #cancel search, yeah its ugly
@@ -128,15 +128,13 @@ class router:
     def clear_r_table(self):
     	self.routing_table = []
 
-    def remove_from_r_table(self, destination):
-    	#deletes routing table row by destination
-    	i=0
-    	while i < len(self.routing_table): #finds destination in routing table
-            if self.routing_table[i][0] == destination
-            	del elf.routing_table[i][2]
-            	del elf.routing_table[i][1]
-            	del elf.routing_table[i][0]
-            i += 1
+	def remove_from_r_table(self, destination):
+		#deletes routing table row by destination
+		i=0
+		while i < len(self.routing_table): #finds destination in routing table
+			if self.routing_table[i][0] == destination:
+				del elf.routing_table[i]
+			i +=1
 """
 #some test data and tests
 

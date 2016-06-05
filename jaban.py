@@ -20,7 +20,7 @@ def main():
                 self.conn = None
                 self.addr = None
                 self.PORT = None
-                self.accept_file = no
+                self.accept_file = "no"
                 self.file_name = ''
 
             def socet_data (self, sock, message):
@@ -48,6 +48,7 @@ def main():
                 
 
                 whole_inc_message = []
+                whole_file_inc_message =[]
                 # Select loop for listen
                 while self.running == True:
                     #inputready,outputready,exceptready = select.select ([self.conn],[self.conn],[])
@@ -78,22 +79,22 @@ def main():
                             in_data = message().break_message(data)
                                 #print "data message: " + in_data
                                 
-                            print in_data
+                            #print in_data
                             if in_data["type"] == "\x04":
                                 
                                 if in_data["flag"] == "1":
                                     
-                                    print "in_data source: " + in_data["source"]
-                                    print "self address: " + str(self.addr[0])+":"+str(self.addr[1])                                        
-                                    print "con out list: " + str(conn_out_list)
-                                    print "con in list: " + str(conn_list)
-                                    print "soc in list: " + str(conn_list[2]) # can't use getname()
-                                    print routing.neighbour_t_add(in_data["source"], str(self.addr[0])+":"+str(self.addr[1]), 5)
+                                    #print "in_data source: " + in_data["source"]
+                                    #print "self address: " + str(self.addr[0])+":"+str(self.addr[1])                                        
+                                    #print "con out list: " + str(conn_out_list)
+                                    #print "con in list: " + str(conn_list)
+                                    #print "soc in list: " + str(conn_list[2]) # can't use getname()
+                                    routing.neighbour_t_add(in_data["source"], str(self.addr[0])+":"+str(self.addr[1]), 5)
                                     routing.display_n_table()
                                         #if routing.neigh_table[routing.find_uuid_in_neighbour_t(in_data["source"])][1] == self.conn : #broken?
                                             #self.conn.sendall(Message().ack())
                                         #else: 
-                                    print routing.neigh_table[routing.find_uuid_in_neighbour_t(in_data["source"])][1] #broken?
+                                    #print routing.neigh_table[routing.find_uuid_in_neighbour_t(in_data["source"])][1] #broken?
                             elif in_data["type"] == "\x01":
                                 
                                 if in_data["flag"] == "4":
@@ -102,9 +103,8 @@ def main():
                                             #check if correct destination
                                     whole_inc_message.append(in_data["payload"])
                                     self.conn.sendall(Message().ack())
-                                    #socet_data(self.conn, Message().ack())
 
-                                elif in_data["flag"] =="1":
+                                elif in_data["flag"] =="1" and self.accept_file != "y":
                                     whole_inc_message.append(in_data["payload"])
                                     print "(" + in_data["source"] + "): " + ''.join(whole_inc_message) #in_data["payload"]
                                     self.conn.sendall(Message().ack())
@@ -116,6 +116,7 @@ def main():
                                     try:
                                         f.write(in_data["payload"])
                                         f.close()
+                                        self.conn.sendall(Message().ack())
                                     except Exception, e:
                                         f.close()
 
@@ -125,10 +126,12 @@ def main():
                                     try:
                                         f.write(in_data["payload"])
                                         f.close()
+                                        self.conn.sendall(Message().ack())
                                     except Exception, e:
                                         f.close()
-                                    self.accept_file = "No":    
-                                    self.sock.sendall(Message().ack())
+
+                                    self.accept_file = "no"    
+                                    self.conn.sendall(Message().ack())
                                     sys.stdout.flush()
 
 
@@ -152,10 +155,10 @@ def main():
                                     self.file_name = ''.join(file_name_l)
                                     file_size = ''.join(file_size_l)
 
-                                    print "receiving file " + file_name + " size: " file_size
+                                    print "receiving file " + self.file_name + " size: " + file_size
                                     self.accept_file = raw_input('Accept file (y/n):')
+                                    self.conn.sendall(Message().ack())
 
-                            elif in_data["type"] == "\x02":
                                 if in_data["flag"] == "4":
                                     print "ack received: " + in_data["source"]
 
@@ -184,15 +187,16 @@ def main():
                 self.HOST = None
                 self.PORT = None
                 self.running = 1
-                self.accept_file = no
+                self.accept_file = "no"
                 self.file_name = ''
-
+                
             def run(self): 
                 self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 #self.sock.bind(('', self.port))
                 self.sock.connect((self.HOST, int(self.PORT)))
                 
                 whole_inc_message = []
+                whole_file_inc_message =[]
 
                 # Select loop for listen
                 while self.running == True:
@@ -206,7 +210,7 @@ def main():
                                     
                             if in_data["type"] == "\x04":
                                 if in_data["flag"] == "1":
-                                    if routing.neigh_table[routing.find_uuid_in_neighbour_t(in_data["source"])][1] == self.sock : #broken?
+                                    if routing.neigh_table[routing.find_uuid_in_neighbour_t(in_data["source"])][1] == str(self.sock) : #broken?
                                         self.sock.sendall(Message().ack())
                                     else: 
                                         print routing.neigh_table[routing.find_uuid_in_neighbour_t(in_data["source"])][1] #broken?
@@ -237,13 +241,14 @@ def main():
                                     try:
                                         f.write(in_data["payload"])
                                         f.close()
+                                        self.sock.sendall(Message().ack())
                                     except Exception, e:
                                         f.close()
-                                    self.accept_file = "No":    
-                                    self.sock.sendall(Message().ack())
+                                    
+                                    self.accept_file = "no"
                                     sys.stdout.flush()
 
-                                elif in_data["flag"] =="1" and self.accept_file == "No":
+                                elif in_data["flag"] =="1" and self.accept_file != "y":
                                     whole_inc_message.append(in_data["payload"])
                                     print "("+in_data["source"]+"): "+ ''.join(whole_inc_message) #in_data["payload"]
                                     whole_inc_message = []
@@ -270,7 +275,7 @@ def main():
                                     self.file_name = ''.join(file_name_l)
                                     file_size = ''.join(file_size_l)
 
-                                    print "receiving file " + file_name + " size: " file_size
+                                    print "receiving file " + self.file_name + " size: " + file_size
                                     self.accept_file = raw_input('Accept file (y/n):')
 
                             elif in_data["type"] == "\x02":
@@ -314,6 +319,8 @@ def main():
                             sys.stdout.flush()
                         except Exception, e:
                             print e
+                    elif text == 'start_serv':
+                        chat_server.start()    
                     elif text == 'connect_neighbour':
                         chat_client.HOST = raw_input("Insert neighbour ip: ")
                         chat_client.PORT = int(raw_input("Insert neighbour port: "))
@@ -394,7 +401,7 @@ def main():
                         print "Neighbour table cleared"
                     elif text == 'ack':
                         try:
-                            chat_server.conn.sendall(Message().ack()
+                            chat_server.conn.sendall(Message().ack())
                         except Exception, e:
                             sys.stdout.flush()
                         try:
@@ -443,12 +450,11 @@ def main():
     routing.myIPSOC = "127.0.0.1:"+PORT
     #add 1. data to routing and neighbour table
     routing.neighbour_t_add(routing.myUUID,routing.myIPSOC, 30)
-    router.routing_t_add(routing.myUUID, routing.myUUID, 0)
+    routing.routing_t_add(routing.myUUID, routing.myUUID, 0)
     chat_server = Chat_Server()
     chat_client = Chat_Client()
     text_input = Text_Input()
     chat_server.PORT = int(PORT)
-    chat_server.start()
     text_input.start()
 
 if __name__ == "__main__":

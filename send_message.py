@@ -14,7 +14,7 @@ class Message():
 		auth_msg.append(build_packet.version())
 		for c in build_packet.source():
 			auth_msg.append(c);
-		for c in build_packet.destination("00000000"):
+		for c in build_packet.destination():
 			auth_msg.append(c);
 		auth_msg.append(build_packet.type("data"))		
 		
@@ -23,7 +23,7 @@ class Message():
 		
 		auth_msg.append(build_packet.hopcount(1))
 		auth_msg.append(build_packet.length())
-		auth_msg.append(build_packet.payload())
+		auth_msg.append(build_packet.payload("0"))
 
 		return auth_msg;
 
@@ -36,7 +36,7 @@ class Message():
 		file_msg.append(build_packet.version())
 		for c in build_packet.source():
 			file_msg.append(c);
-		for c in build_packet.destination("00000000"):
+		for c in build_packet.destination():
 			file_msg.append(c);
 		file_msg.append(build_packet.type("data"))		
 		
@@ -63,7 +63,7 @@ class Message():
 		chat_msg.append(build_packet.version())
 		for c in build_packet.source():
 			chat_msg.append(c);
-		for c in build_packet.destination("00000000"):
+		for c in build_packet.destination():
 			chat_msg.append(c);
 		chat_msg.append(build_packet.type("data"))		
 		
@@ -90,7 +90,7 @@ class Message():
 		auth_msg.append(build_packet.version())
 		for c in build_packet.source():
 			auth_msg.append(c)
-		for c in build_packet.destination("00000000"):
+		for c in build_packet.destination():
 			auth_msg.append(c)
 		auth_msg.append(build_packet.type("authentication"))		
 		
@@ -99,7 +99,7 @@ class Message():
 		
 		auth_msg.append(build_packet.hopcount(1))
 		auth_msg.append(build_packet.length(0))
-		auth_msg.append(build_packet.payload(" "))
+		auth_msg.append(build_packet.payload("0"))
 
 		return str(auth_msg);
 
@@ -111,7 +111,7 @@ class Message():
 		auth_msg.append(build_packet.version())
 		for c in build_packet.source():
 			auth_msg.append(c);
-		for c in build_packet.destination("00000000"):
+		for c in build_packet.destination():
 			auth_msg.append(c);
 		auth_msg.append(build_packet.type("authentication"))		
 		
@@ -120,7 +120,7 @@ class Message():
 		
 		auth_msg.append(build_packet.hopcount(1))
 		auth_msg.append(build_packet.length(0))
-		auth_msg.append(build_packet.payload(" "))
+		auth_msg.append(build_packet.payload("0"))
 
 		return auth_msg;
 
@@ -143,7 +143,7 @@ class Message():
 		
 		control_msg.append(build_packet.hopcount())
 		control_msg.append(build_packet.length())
-		control_msg.append(build_packet.payload())
+		control_msg.append(build_packet.payload("0"))
 
 		return control_msg;
 
@@ -213,7 +213,7 @@ class Message():
 		
 		control_msg.append(build_packet.hopcount())
 		control_msg.append(build_packet.length())
-		control_msg.append(build_packet.payload())
+		control_msg.append(build_packet.payload("0"))
 
 		return control_msg;
 
@@ -234,7 +234,7 @@ class Message():
 		
 		control_msg.append(build_packet.hopcount(15))
 		control_msg.append(build_packet.length(0))
-		control_msg.append(build_packet.payload(" "))
+		control_msg.append(build_packet.payload("0"))
 
 		return control_msg;
 
@@ -255,7 +255,7 @@ class Message():
 		
 		control_msg.append(build_packet.hopcount())
 		control_msg.append(build_packet.length())
-		control_msg.append(build_packet.payload())
+		control_msg.append(build_packet.payload("0"))
 
 		return control_msg;
 
@@ -276,7 +276,7 @@ class Message():
 		
 		control_msg.append(build_packet.hopcount())
 		control_msg.append(build_packet.length())
-		control_msg.append(build_packet.payload())
+		control_msg.append(build_packet.payload("0"))
 
 		return control_msg;
 

@@ -17,9 +17,9 @@ class packet():
 	"""This is the Message Class"""
 
 	config =  ConfigParser.ConfigParser()
-	def __init__(self)
+	def __init__(self):
 		self.uuid = '796326ED'
-		self.dst = ''
+		self.dst = '896326ED'
 
 	def version(self , ver = 0x01):		
 		return ver;
